@@ -2,14 +2,14 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/Library
-/Logs
-/obj/Debug
+/Temp
 /ProjectSettings
 /Packages
-/Temp
-/.vs/Book Examples/v15
+/obj/Debug
+/Logs
+/Library
 /Book Examples.sln
 /Assembly-CSharp.csproj
 /Assembly-CSharp-firstpass.csproj
 /Assembly-CSharp-Editor-firstpass.csproj
+/.vs
