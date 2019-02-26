@@ -16,3 +16,4 @@
 /obj/Release/Assembly-CSharp.csproj.CoreCompileInputs.cache
 /obj/Release/Assembly-CSharp-firstpass.csproj.CoreCompileInputs.cache
 /obj/Release/Assembly-CSharp-Editor-firstpass.csproj.CoreCompileInputs.cache
+*.meta
