@@ -20,16 +20,21 @@ public class ManageNPC : MonoBehaviour
         if (health <= 0) Destroy();
     }
 
-    public void gotHit()
+    public void GotHit()
     {
         health -= 50;
+    }
+
+    public void GotHitByGrenade()
+    {
+        health = 0;
     }
 
     public void Destroy()
     {
         GameObject lastSmoke = Instantiate(smoke, transform.position, Quaternion.identity);
         Destroy(lastSmoke, 3);
-        Destroy(gameObject);
+        Destroy(gameObject, .25f);
     }
 
 }
