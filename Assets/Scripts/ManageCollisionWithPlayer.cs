@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class ManageCollisionWithPlayer : MonoBehaviour
 {
+    public AudioClip powerUpSound;
     // Start is called before the first frame update
     void Start()
     {
@@ -22,6 +23,8 @@ public class ManageCollisionWithPlayer : MonoBehaviour
         {
             transform.GetChild(0).GetComponent<ManageWeapons>().AddAmmo(hit.gameObject.name);
             Destroy(hit.gameObject);
+            GetComponent<AudioSource>().clip = powerUpSound;
+            GetComponent<AudioSource>().Play();
         }
     }
 

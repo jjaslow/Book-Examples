@@ -119,7 +119,7 @@ public class ManageWeapons : MonoBehaviour
                 if (nextWeapon > 2) nextWeapon = 0;
             }
             currentWeapon = nextWeapon;
-            //Debug.Log("activated weapon: "+ weaponName[currentWeapon] + " with ammo of: "+ ammos[currentWeapon]);
+            //Debug.Log("activated weapon: " + weaponName[currentWeapon] + " with ammo of: " + ammos[currentWeapon]);
         }
             
         if(timerStarted)
