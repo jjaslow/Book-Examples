@@ -21,10 +21,19 @@ public class ManageCollisionWithPlayer2 : MonoBehaviour
     {
         if (hit.gameObject.name == "ammo_gun" || hit.gameObject.name == "ammo_auto_gun" || hit.gameObject.name == "ammo_grenade")
         {
-            transform.GetChild(0).GetComponent<ManageWeapons>().AddAmmo(hit.gameObject.name);
+            transform.GetChild(0).GetComponent<ManageWeapons2>().AddAmmo(hit.gameObject.name);
             Destroy(hit.gameObject);
             GetComponent<AudioSource>().clip = powerUpSound;
             GetComponent<AudioSource>().Play();
+        }
+        if (hit.gameObject.tag == "health_pack")
+        {
+            Debug.Log("up health");
+            Destroy(hit.gameObject);
+            
+            GetComponent<AudioSource>().clip = powerUpSound;
+            GetComponent<AudioSource>().Play();
+            GetComponent<ManagePlayerHealth>().increaseHealth(75);
         }
     }
 

@@ -38,9 +38,9 @@ public class ManageGrenade2 : MonoBehaviour
         Collider[] colliders = Physics.OverlapSphere(transform.position, radius);
         for (int x = 0; x<colliders.Length; x++)
         {
-            if(colliders[x].gameObject.GetComponent<Rigidbody>() != null && colliders[x].gameObject.tag == "target")
+            if(colliders[x].gameObject.tag == "target")
             {
-                colliders[x].gameObject.GetComponent<ManageNPC>().GotHitByGrenade();
+                colliders[x].gameObject.GetComponent<ManageNPC2>().GotHitByGrenade();
             }
         }
 

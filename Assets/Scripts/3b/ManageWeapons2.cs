@@ -10,9 +10,10 @@ public class ManageWeapons2 : MonoBehaviour
     Ray rayFromPlayer;
     RaycastHit hit;
     public GameObject sparksAtImpact;
-    Text currentGunStatus;
+    Text userInfo;
     public GameObject grenade;
     GameObject launcher;
+    ManagePlayerHealth ManagePlayerHealth;
 
     private const int WEAPON_GUN = 0;
     private const int WEAPON_AUTO_GUN = 1;
@@ -34,13 +35,13 @@ public class ManageWeapons2 : MonoBehaviour
     void Start()
     {
         playersCamera = GetComponent<Camera>();
-        currentGunStatus = GameObject.Find("CurrentGunStatus").GetComponent<Text>();
-        launcher = GameObject.Find("launcher");
+        
+        
 
         hasWeapon = new bool[3];
         hasWeapon[WEAPON_GUN] = true;
-        hasWeapon[WEAPON_AUTO_GUN] = true;
-        hasWeapon[WEAPON_GRENADE] = true;
+        hasWeapon[WEAPON_AUTO_GUN] = false;
+        hasWeapon[WEAPON_GRENADE] = false;
 
         weaponName = new string[3];
         weaponName[WEAPON_GUN] = "GUN";
@@ -68,10 +69,13 @@ public class ManageWeapons2 : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        ManagePlayerHealth = GameObject.Find("FPSController").GetComponent<ManagePlayerHealth>();
+        userInfo = GameObject.Find("userInfo").GetComponent<Text>();
+        launcher = GameObject.Find("launcher");
         rayFromPlayer = playersCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
         Debug.DrawRay(rayFromPlayer.origin, rayFromPlayer.direction * 100, Color.red);
 
-        currentGunStatus.text = weaponName[currentWeapon] + " (" + ammos[currentWeapon] + ")";
+        userInfo.text = weaponName[currentWeapon] + " (" + ammos[currentWeapon] + "/" + maxAmmos[currentWeapon]  + ")  Health: "+ ManagePlayerHealth.health + " Lives: "+ ManagePlayerHealth.nbLives;
 
         if (Input.GetKey(KeyCode.F) && ammos[currentWeapon] > 0 && canShoot && (currentWeapon == WEAPON_GUN || currentWeapon == WEAPON_AUTO_GUN) )
         {
@@ -90,7 +94,7 @@ public class ManageWeapons2 : MonoBehaviour
                 Destroy(sparks, 5f);
                 if(hit.collider.gameObject.tag == "target")
                 {
-                    hit.collider.gameObject.GetComponent<ManageNPC>().GotHit();
+                    hit.collider.gameObject.GetComponent<ManageNPC2>().GotHit();
                 }
             }
         }

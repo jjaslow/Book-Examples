@@ -11,7 +11,7 @@ public class ManageNPC2 : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        health = 100;
+        health = 550;
     }
 
     // Update is called once per frame
@@ -23,18 +23,22 @@ public class ManageNPC2 : MonoBehaviour
     public void GotHit()
     {
         health -= 50;
+        GetComponent<ControllNPCFSM>().setGotHitParameter();
     }
 
     public void GotHitByGrenade()
     {
         health = 0;
+        GetComponent<ControllNPCFSM>().setGotHitParameter();
     }
 
     public void Destroy()
     {
-        GameObject lastSmoke = Instantiate(smoke, transform.position, Quaternion.identity);
-        Destroy(lastSmoke, 3);
-        Destroy(gameObject, .25f);
+        //GameObject lastSmoke = Instantiate(smoke, transform.position, Quaternion.identity);
+        //Destroy(lastSmoke, 3);
+        //Destroy(gameObject, .25f);
+        GetComponent<ControllNPCFSM>().setLowHealthParameter();
+        Destroy(gameObject, 5);
     }
 
 }

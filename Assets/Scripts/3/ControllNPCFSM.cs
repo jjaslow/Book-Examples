@@ -5,18 +5,28 @@ using UnityEngine;
 public class ControllNPCFSM : MonoBehaviour
 {
     Animator anim;
-    Ray ray;
-    RaycastHit hit;
+    Ray ray, rayShoot;
+    RaycastHit hit, hitShoot;
     AnimatorStateInfo info;
-    string objectInSight;
     float distance;
     Transform FPS;
+    GameObject gun;
+    private float soundTimer;
+    private bool soundPlaying;
+
+    public Vector3 direction;
+    public bool isInTheFieldOfView;
+    public bool noObjectBetweenNPCAndPlayer = false;
 
     // Start is called before the first frame update
     void Start()
     {
         anim = GetComponent<Animator>();
         FPS = GameObject.Find("FPSController").transform;
+        gun = GameObject.Find("hand_gun");
+        gun.SetActive(false);
+        soundTimer = 0;
+        soundPlaying = false;
     }
 
     // Update is called once per frame
@@ -25,43 +35,68 @@ public class ControllNPCFSM : MonoBehaviour
         ray.origin = transform.position + Vector3.up;
         ray.direction = transform.forward;
         info = anim.GetCurrentAnimatorStateInfo(0);
-        objectInSight = "";
 
         distance = Vector3.Distance(transform.position, FPS.position);
-        //Debug.Log(distance);
         bool withinReach, closeToPlayer;
         withinReach = (distance < 1.5f);
         anim.SetBool("withinArmsReach", withinReach);
 
-        Debug.DrawRay(ray.origin, ray.direction * 100, Color.red);
-        //Debug.DrawRay(ray.origin, new Vector3(-.025f,0,1) * 100, Color.red);
-        //Debug.DrawRay(ray.origin, new Vector3(.025f, 0, 1) * 100, Color.red);
+        direction = (FPS.position - transform.position).normalized;
+        isInTheFieldOfView = (Vector3.Dot(transform.forward.normalized, direction) > .7);
+        Debug.DrawRay(transform.position, direction * 100, Color.green);
+        Debug.DrawRay(transform.position, transform.forward * 100, Color.magenta);
 
 
-        if (Physics.Raycast(ray.origin, ray.direction * 100, out hit))
+        if (Physics.Raycast(transform.position, direction * 100, out hit))   //Physics.Raycast(ray.origin, ray.direction * 100, out hit
         {
-            objectInSight = hit.collider.tag;
-            Debug.Log("object in sight: " + objectInSight);
-            if(objectInSight == "Player")
+            if (hit.collider.tag == "Player") noObjectBetweenNPCAndPlayer = true;
+            else noObjectBetweenNPCAndPlayer = false;
+           
+
+            if (noObjectBetweenNPCAndPlayer && isInTheFieldOfView)
             {
                 anim.SetBool("canSeePlayer", true);
-                Debug.Log("just saw the player");
+                transform.LookAt(GameObject.Find("playerMiddle").transform);
+                //Debug.Log("just saw the player");
             }
+            else anim.SetBool("canSeePlayer", false);
         }
 
         if(info.IsName("IDLE"))
         {
-            Debug.Log("we are in IDLE state");
+            //Debug.Log("we are in IDLE state");
             GetComponent<UnityEngine.AI.NavMeshAgent>().isStopped = true;
         }
         else if (info.IsName("ATTACK_CLOSE_RANGE"))
         {
             GetComponent<UnityEngine.AI.NavMeshAgent>().isStopped = true;
+            if(info.normalizedTime%1.0>=.98)
+            {
+                GameObject.Find("FPSController").GetComponent<ManagePlayerHealth>().decreaseHealth(5);
+            }
+        }
+        else if (info.IsName("HIT"))
+        {
+            GetComponent<UnityEngine.AI.NavMeshAgent>().isStopped = true;
+        }
+        else if (info.IsName("SHOOT"))
+        {
+            GetComponent<UnityEngine.AI.NavMeshAgent>().isStopped = true;
+            if (anim.IsInTransition(0) && anim.GetNextAnimatorStateInfo(0).IsName("FOLLOW_PLAYER")) gun.SetActive(false);
+            else
+            {
+                transform.LookAt(GameObject.Find("playerMiddle").transform);
+                gun.SetActive(true);
+                shootGun();
+            }
+            
+            
         }
         else if (info.IsName("FOLLOW_PLAYER"))
         {
             GetComponent<UnityEngine.AI.NavMeshAgent>().destination = GameObject.Find("playerMiddle").transform.position;
             GetComponent<UnityEngine.AI.NavMeshAgent>().isStopped = false;
+            soundPlaying = false;
 
             /*if (objectInSight != "Player")
             {
@@ -77,6 +112,51 @@ public class ControllNPCFSM : MonoBehaviour
             */
         }
 
+
+
+    }
+
+    public void setGotHitParameter()
+    {
+        anim.SetTrigger("gotHit");
+    }
+    public void setLowHealthParameter()
+    {
+        anim.SetBool("lowHealth", true);
+    }
+
+    private void shootGun()
+    {
+        rayShoot.origin = transform.position;
+        rayShoot.direction = transform.forward;
+        Debug.DrawRay(rayShoot.origin, rayShoot.direction * 100, Color.blue);
+
+        if (Physics.Raycast(rayShoot.origin, rayShoot.direction * 100, out hitShoot))
+        {
+            Debug.Log("sight1: " + hitShoot.collider.tag);
+        }
+
+
+        if (!soundPlaying)
+        {
+            soundPlaying = true;
+            GetComponent<AudioSource>().Play();
+            
+            Debug.Log("sight2: " + hitShoot.collider.tag);
+    
+                
+                if(hitShoot.collider.tag == "Player")
+                {
+                    Debug.Log('a');
+                    GameObject.Find("FPSController").GetComponent<ManagePlayerHealth>().decreaseHealth(5);
+                }
+                
+    
+        }
+        //else
+        //{
+        //    soundTimer += Time.deltaTime;
+        //}
 
     }
 }
